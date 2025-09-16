@@ -1,7 +1,6 @@
 // Fetch all campaigns for the logged-in user
 const getCampaigns = async (req, res) => {
   try {
-    // Optionally filter by user if you store createdBy
     const campaigns = await Campaign.find();
     res.json(campaigns);
   } catch (err) {

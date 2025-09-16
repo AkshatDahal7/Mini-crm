@@ -36,13 +36,14 @@ const loginUser = async (req, res) => {
     const valid = await bcrypt.compare(password, user.password);
     if (!valid)
       return res.status(400).json({ message: "Invalid email or password" });
-
+    console.log("Signing with secret:", process.env.SECRET);
     // Generate JWT token
     const token = jwt.sign(
       { id: user._id, email: user.email, name: user.name },
       process.env.SECRET,
       { expiresIn: "1d" }
     );
+
 
     res.json({ message: "Login successful", token, user });
   } catch (err) {

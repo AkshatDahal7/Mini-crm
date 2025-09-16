@@ -9,13 +9,16 @@ function auth(req, res, next) {
   }
 
   jwt.verify(token, process.env.SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(403).json({ message: "Invalid or expired token." });
-    }
+  if (err) {
+    console.error("❌ JWT verification error:", err.message);
+    return res.status(403).json({ message: "Invalid or expired token." });
+  }
 
-    req.user = decoded; // decoded payload (id, email, etc.)
-    next();
-  });
+  console.log("✅ Decoded user:", decoded);
+  req.user = decoded;
+  next();
+});
+
 }
 
 module.exports = auth;
