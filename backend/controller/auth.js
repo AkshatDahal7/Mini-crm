@@ -51,33 +51,4 @@ const loginUser = async (req, res) => {
   }
 };
 
-const { OAuth2Client } = require('google-auth-library');
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID';
-const client = new OAuth2Client(GOOGLE_CLIENT_ID);
-
-const googleAuth = async (req, res) => {
-  const { token } = req.body;
-  try {
-    const ticket = await client.verifyIdToken({ idToken: token, audience: GOOGLE_CLIENT_ID });
-    const payload = ticket.getPayload();
-    const { email, name, sub } = payload;
-    if (!email) return res.status(400).json({ message: 'No email from Google' });
-
-    let user = await User.findOne({ email });
-    if (!user) {
-      user = new User({ name, email, password: sub }); // password is Google sub, not used
-      await user.save();
-    }
-    // Issue JWT
-    const jwtToken = jwt.sign(
-      { id: user._id, email: user.email, name: user.name },
-      process.env.SECRET,
-      { expiresIn: '1d' }
-    );
-    res.json({ token: jwtToken, user });
-  } catch (err) {
-    res.status(401).json({ message: 'Google authentication failed', error: err.message });
-  }
-};
-
-module.exports = {loginUser, registerUser, googleAuth};
+module.exports = {loginUser, registerUser};
